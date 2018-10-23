@@ -8,23 +8,24 @@
 if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
     message(STATUS "Warning: Dynamic building not supported yet. Building static.")
     set(VCPKG_LIBRARY_LINKAGE static)
+    set(VCPKG_CRT_LINKAGE dynamic)
 endif()
 
 include(vcpkg_common_functions)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO castano/nvidia-texture-tools
-    REF 2.1.0
-    SHA512 6c5c9588af57023fc384de080cbe5c5ccd8707d04a9533384c606efd09730d780cb21bcf2d3576102a3facd2f281cacb2625958d74575e71550fd98da92e38b6
+    REPO highfidelity/nvidia-texture-tools
+    REF a1f4c3c22c68554d8840dfe007e8aeefb2177ee0
+    SHA512 e1db56acbccfc5a4b8627f528b73ce01c1308392d2b6808ee290a719129b209488c2857ff8a8f5b83370ce3931ec2f85a98a940a59a1f8b18cc2cb6219394267
     HEAD_REF master
 )
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
-    PREFER_NINJA
     OPTIONS
         -DNVTT_SHARED=0
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 )
 
 vcpkg_install_cmake()

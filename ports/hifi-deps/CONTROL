@@ -1,0 +1,4 @@
+Source: hifi-deps
+Version: 0
+Description: Collected dependencies for High Fidelity applications
+Build-Depends: bullet3, draco, glm, nvtt, openssl, tbb, zlib

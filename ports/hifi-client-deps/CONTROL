@@ -1,0 +1,4 @@
+Source: hifi-client-deps
+Version: 0
+Description: Collected dependencies for High Fidelity applications
+Build-Depends: hifi-deps, glslang, nlohmann-json, openvr, sdl2, shaderc, spirv-cross, spirv-tools
