@@ -17,21 +17,23 @@ endif()
 
 include(vcpkg_common_functions)
 
-vcpkg_download_distfile(
-    ETC2COMP_ARCHIVE 
-    URLS https://public.highfidelity.com/dependencies/etc2comp-patched.zip
-    FILENAME etc2comp-patched.zip
-    SHA512 4be95f09fb9edfd703c62ebc569d1bdaaf54f7f0bf4f8af51b48c2952064fd43608fae0463ae0e108eb50fef85f85f9021ee250426488fce4f60a17dd60707b6
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO highfidelity/etc2comp
+    REF 7f1843bf07825c21cab711360c1ddbad04641036
+    SHA512 d747076acda8537d39585858c793a35c3dcc9ef283d723619a47f8c81ec1454c95b3340ad35f0655a939eae5b8271c801c48a9a7568311a01903a344c44af25b
+    HEAD_REF master
 )
-
-vcpkg_extract_source_archive(${ETC2COMP_ARCHIVE})
-set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/etc2comp)
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
 )
 
-vcpkg_build_cmake()
+vcpkg_install_cmake()
+
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+file(COPY ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/etc2comp)
+file(RENAME ${CURRENT_PACKAGES_DIR}/share/etc2comp/LICENSE ${CURRENT_PACKAGES_DIR}/share/etc2comp/copyright)
 
 vcpkg_copy_pdbs()
 
