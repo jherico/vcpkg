@@ -1,45 +1,36 @@
 include(vcpkg_common_functions)
-
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
-vcpkg_from_github(
+if (ANDROID)
+    vcpkg_download_distfile(
+        SOURCE_ARCHIVE
+        URLS https://public.highfidelity.com/dependencies/glad/glad32es.zip
+        SHA512 2e02ac633eed8f2ba2adbf96ea85d08998f48dd2e9ec9a88ec3c25f48eaf1405371d258066327c783772fcb3793bdb82bd7375fdabb2ba5e2ce0835468b17f65
+    )
+else()
+    # else Linux desktop
+    vcpkg_download_distfile(
+        SOURCE_ARCHIVE
+        URLS https://public.highfidelity.com/dependencies/glad/glad45.zip
+        SHA512 653a7b873f9fbc52e0ab95006cc3143bc7b6f62c6e032bc994e87669273468f37978525c9af5efe36f924cb4acd221eb664ad9af0ce4bf711b4f1be724c0065e
+        FILENAME glad45.zip
+    )
+endif()
+
+vcpkg_extract_source_archive_ex(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO Dav1dde/glad
-    REF 1a42f8a6099c60f6a4522731fadad4191d64e6ff
-    SHA512 02870cf43b5ee33a733122885f748a1368e4487fc08f32ba376d6d53c0efd9ed6e9aea350b723d955869ed47b4d9d69235a52f01723215cf4393d6ca99e2ac00
-    HEAD_REF master
-)
-
-vcpkg_find_acquire_program(PYTHON3)
-get_filename_component(PYTHON3_DIR "${PYTHON3}" DIRECTORY)
-vcpkg_add_to_path("${PYTHON3_DIR}")
-
-file(COPY
-    ${CURRENT_INSTALLED_DIR}/include/KHR/khrplatform.h
-    ${CURRENT_INSTALLED_DIR}/share/egl-registry/egl.xml
-    ${CURRENT_INSTALLED_DIR}/share/opengl-registry/gl.xml
-    ${CURRENT_INSTALLED_DIR}/share/opengl-registry/glx.xml
-    ${CURRENT_INSTALLED_DIR}/share/opengl-registry/wgl.xml
-    DESTINATION ${SOURCE_PATH}/glad/files
+    ARCHIVE ${SOURCE_ARCHIVE}
+    NO_REMOVE_ONE_LEVEL
 )
 
 vcpkg_configure_cmake(
-    SOURCE_PATH ${SOURCE_PATH}
-    PREFER_NINJA
-    OPTIONS
-        -DGLAD_NO_LOADER=OFF
-        -DGLAD_EXPORT=OFF
-        -DGLAD_INSTALL=ON
-        -DGLAD_REPRODUCIBLE=ON
-        -DGLAD_SPEC="gl" # {gl,egl,glx,wgl}
-        -DGLAD_PROFILE="compatibility" # {core,compatibility}
-    OPTIONS_DEBUG
-        -DGLAD_GENERATOR="c-debug"
+  SOURCE_PATH ${SOURCE_PATH}
+  PREFER_NINJA
+  OPTIONS -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 )
 
 vcpkg_install_cmake()
-vcpkg_copy_pdbs()
-vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/glad)
 
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include ${CURRENT_PACKAGES_DIR}/include/KHR)
-configure_file(${SOURCE_PATH}/LICENSE ${CURRENT_PACKAGES_DIR}/share/glad/copyright COPYONLY)
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/copyright DESTINATION ${CURRENT_PACKAGES_DIR}/share/glad)
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+
